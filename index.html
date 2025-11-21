@@ -1,73 +1,798 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>دعوات من أجل سيف</title>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>صدقة جارية - سيف الدين محل عين</title>
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-  <style>
-    /* Basic reset */
-    *, *::before, *::after { box-sizing: border-box; }
-    html, body { height: 100%; margin: 0; padding: 0; font-family: 'Noto Sans Arabic', sans-serif; background: linear-gradient(135deg, #F8FAFC 0%, #E8EBF0 100%); color: #1F2937; line-height: 1.8; }
-    a { color: inherit; text-decoration: none; }
-
-    /* Navigation */
-    nav { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding: 1.2rem 2rem; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 1000; }
-    .nav-container { max-width: 1200px; margin: 0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; }
-    .logo { font-family: 'Amiri', serif; font-size: 1.8rem; font-weight:700; color:#D4AF37; }
-    .nav-links { display:flex; gap:1.5rem; list-style:none; margin:0; padding:0; align-items:center; }
-    .nav-links a { padding:0.25rem 0.5rem; border-radius:6px; }
-
-    /* Main */
-    main { max-width: 1000px; margin: 2.5rem auto; padding: 1rem; }
-    .card { background: #fff; border-radius: 12px; padding: 1.25rem 1.5rem; box-shadow: 0 6px 18px rgba(15,23,42,0.06); }
-    h1 { font-family: 'Amiri', serif; font-size: 2rem; margin:0 0 0.5rem 0; }
-    p.lead { margin: 0 0 1rem 0; color: #374151; }
-
-    footer { max-width: 1000px; margin: 2rem auto; padding: 0 1rem 2rem; color:#6B7280; }
-    @media (max-width:600px) {
-      .nav-container { padding:0.5rem 1rem; }
-      h1 { font-size:1.5rem; }
-    }
-  </style>
-</head>
-<body>
-  <nav>
-    <div class="nav-container">
-      <a class="logo" href="#">دعوات سيف</a>
-      <ul class="nav-links" role="navigation">
-        <li><a href="#">الرئيسية</a></li>
-        <li><a href="#">الأدعية</a></li>
-        <li><a href="#">حول</a></li>
-      </ul>
-    </div>
-  </nav>
-
-  <main>
-    <div class="card">
-      <h1>مرحبًا</h1>
-      <p class="lead">هذه صفحة مبسطة. إذا قمت بفتح هذه الصفحة وتراها تكون صفحة HTML صحيحة — فالمشكلة كانت أن ملفك السابق حُفظ بصيغة "Word HTML" حيث كانت العلامات HTML مُرمّزة كنص داخل مستند Word.</p>
-
-      <h2>ملاحظات تقنية</h2>
-      <ul>
-        <li>تأكد من حفظ الملف كـ UTF-8 (بدون BOM) لكي تعرض الحروف العربية بشكل صحيح.</li>
-        <li>إذا كانت سكريبتاتك في المجلد <code>/_sdk/</code>, فاحرص على أن المسار صحيح بالنسبة لمكان استضافة الموقع. إن فتحت الملف محليًا (file://) فإن المسارات التي تبدأ بـ / تُشير إلى جذر القرص/الخادم.</li>
-        <li>إن أردت، يمكنك الآن وضع محتوى أدعيةك داخل &lt;main&gt; كعناصر HTML عادية.</li>
-      </ul>
-    </div>
-  </main>
-
-  <footer>
-    <p>تم الإنشاء بواسطة fayrouzaa-byte</p>
-  </footer>
-
-  <!-- Optional scripts: keep if these files exist on your server -->
+  <!-- SDK scripts: defer so they don't block parsing; code checks for their presence -->
   <script src="/_sdk/data_sdk.js" defer></script>
   <script src="/_sdk/element_sdk.js" defer></script>
-</body>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&amp;family=Noto+Sans+Arabic:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Noto Sans Arabic', sans-serif;
+      background: linear-gradient(135deg, #F8FAFC 0%, #E8EBF0 100%);
+      color: #1F2937;
+      line-height: 1.8;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    /* Navigation */
+    nav {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 1.2rem 2rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .logo {
+      font-family: 'Amiri', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #D4AF37;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      color: #1F2937;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s;
+      padding: 0.5rem 1rem;
+    }
+
+    .nav-links a:hover {
+      color: #D4AF37;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 4rem 2rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .bismillah {
+      font-family: 'Amiri', serif;
+      font-size: 2.5rem;
+      color: #D4AF37;
+      margin-bottom: 2rem;
+      font-weight: 700;
+    }
+
+    .deceased-name {
+      font-family: 'Amiri', serif;
+      font-size: 3rem;
+      color: #1F2937;
+      margin: 1rem 0;
+      font-weight: 700;
+    }
+
+    .status {
+      font-size: 1.3rem;
+      color: #6B7280;
+      margin-bottom: 3rem;
+      font-style: italic;
+    }
+
+    .quranic-verse {
+      background: white;
+      padding: 2.5rem;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      margin: 2rem 0;
+      border-right: 5px solid #D4AF37;
+    }
+
+    .quranic-verse p {
+      font-family: 'Amiri', serif;
+      font-size: 1.8rem;
+      line-height: 2.5;
+      color: #1F2937;
+      margin: 0;
+    }
+
+    .cta-button {
+      background: #D4AF37;
+      color: white;
+      border: none;
+      padding: 1rem 3rem;
+      font-size: 1.2rem;
+      font-family: 'Noto Sans Arabic', sans-serif;
+      font-weight: 600;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 2rem;
+      box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+    }
+
+    .cta-button:hover {
+      background: #C19B2E;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+    }
+
+    /* Section Styles */
+    section {
+      max-width: 1000px;
+      margin: 4rem auto;
+      padding: 0 2rem;
+    }
+
+    .section-title {
+      font-family: 'Amiri', serif;
+      font-size: 2.5rem;
+      color: #D4AF37;
+      text-align: center;
+      margin-bottom: 2rem;
+      font-weight: 700;
+    }
+
+    /* Biography */
+    .biography-content {
+      background: white;
+      padding: 2.5rem;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      font-size: 1.2rem;
+      line-height: 2.2;
+    }
+
+    /* Duas Cards */
+    .duas-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .dua-card {
+      background: white;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      transition: transform 0.3s, box-shadow 0.3s;
+      border-top: 4px solid #D4AF37;
+    }
+
+    .dua-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    .dua-card h3 {
+      font-family: 'Amiri', serif;
+      color: #D4AF37;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .dua-card p {
+      font-size: 1.1rem;
+      line-height: 2;
+      color: #1F2937;
+    }
+
+    /* Prayer Counter */
+    .counter-container {
+      background: white;
+      padding: 3rem;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      text-align: center;
+      max-width: 600px;
+      margin: 2rem auto;
+    }
+
+    .counter-instruction {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      color: #6B7280;
+    }
+
+    .counter-display {
+      font-family: 'Amiri', serif;
+      font-size: 2.5rem;
+      color: #D4AF37;
+      margin: 2rem 0;
+      font-weight: 700;
+    }
+
+    .counter-button {
+      background: linear-gradient(135deg, #D4AF37 0%, #C19B2E 100%);
+      color: white;
+      border: none;
+      padding: 1.5rem 3rem;
+      font-size: 1.3rem;
+      font-family: 'Noto Sans Arabic', sans-serif;
+      font-weight: 600;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .counter-button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+    }
+
+    .counter-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Quran Section */
+    .quran-container {
+      background: white;
+      padding: 3rem;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      text-align: center;
+    }
+
+    .quran-caption {
+      font-family: 'Amiri', serif;
+      font-size: 1.3rem;
+      color: #6B7280;
+      margin-top: 1.5rem;
+      font-style: italic;
+    }
+
+    .video-container {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 10px;
+      margin: 2rem 0;
+    }
+
+    .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* Footer */
+    footer {
+      background: #1F2937;
+      color: white;
+      padding: 3rem 2rem;
+      text-align: center;
+      margin-top: 4rem;
+    }
+
+    .footer-dua {
+      font-family: 'Amiri', serif;
+      font-size: 1.5rem;
+      margin-bottom: 2rem;
+      line-height: 2;
+    }
+
+    .share-prompt {
+      font-size: 1.1rem;
+      color: #D4AF37;
+      margin-top: 1.5rem;
+    }
+
+    /* Decorative Elements */
+    .decorative-pattern {
+      text-align: center;
+      color: #D4AF37;
+      font-size: 2rem;
+      margin: 2rem 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .deceased-name {
+        font-size: 2rem;
+      }
+
+      .bismillah {
+        font-size: 1.8rem;
+      }
+
+      .quranic-verse p {
+        font-size: 1.4rem;
+      }
+
+      .nav-links {
+        gap: 1rem;
+      }
+
+      .duas-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Loading state */
+    .loading {
+      opacity: 0.5;
+    }
+  </style>
+
+  <!-- optional utility from CDN; kept but loaded deferred (below) -->
+  <script src="https://cdn.tailwindcss.com" defer type="text/javascript"></script>
+ </head>
+ <body>
+  <!-- Navigation -->
+  <nav>
+   <div class="nav-container"><a href="#home" class="logo" id="site-title">صدقة جارية</a>
+    <ul class="nav-links">
+     <li><a href="#home">الرئيسية</a></li>
+     <li><a href="#about">عن الفقيد</a></li>
+     <li><a href="#duas">الأدعية</a></li>
+     <li><a href="#quran">القرآن</a></li>
+    </ul>
+   </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section id="home" class="hero">
+   <div class="bismillah">
+    بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+   </div>
+   <h1 class="deceased-name" id="deceased-name">سيف الدين محل عين</h1>
+   <p class="status">في ذمة الله</p>
+   <div class="quranic-verse">
+    <p>يَا أَيَّتُهَا النَّفْسُ الْمُطْمَئِنَّةُ ارْجِعِي إِلَىٰ رَبِّكِ رَاضِيَةً مَرْضِيَّةً فَادْخُلِي فِي عِبَادِي وَادْخُلِي جَنَّتِي</p>
+   </div>
+   <button class="cta-button" onclick="scrollToSection('duas')">اقرأ الفاتحة</button>
+  </section>
+
+  <div class="decorative-pattern">✦ ✦ ✦</div>
+
+  <!-- Biography Section -->
+  <section id="about">
+   <h2 class="section-title">طيب الذكر</h2>
+   <div class="biography-content">
+    <p id="biography-text">رحل عن عالمنا المغفور له بإذن الله سيف الدين محل عين، تاركاً خلفه سيرة عطرة وقلباً نقياً. نسأل الله أن يجعل مرضه كفارة لذنبه، وصبره رفعةً لدرجته.</p>
+    <p>نرجو منكم إخلاص الدعاء له، لعل دعوة صالحة من قلب صادق توافق ساعة استجابة، فتكون نوراً له في قبره.</p>
+   </div>
+  </section>
+
+  <div class="decorative-pattern">✦ ✦ ✦</div>
+
+  <!-- Duas Section -->
+  <section id="duas">
+   <h2 class="section-title">أدعية مأثورة</h2>
+   <div class="duas-grid">
+    <div class="dua-card">
+     <h3>للمغفرة</h3>
+     <p>اللهم اغفر لعبدك سيف الدين وارحمه، وعافه واعف عنه، وأكرم نزله، ووسع مدخله، واغسله بالماء والثلج والبرد.</p>
+    </div>
+    <div class="dua-card">
+     <h3>للنور في القبر</h3>
+     <p>اللهم اجعل قبره روضة من رياض الجنة، ولا تجعله حفرة من حفر النار. اللهم مد له في قبره مد بصره، وأنزل عليه الضياء والنور والفسحة والسرور.</p>
+    </div>
+    <div class="dua-card">
+     <h3>لدخول الجنة</h3>
+     <p>اللهم أدخله الجنة من غير مناقشة حساب ولا سابقة عذاب. اللهم شفع فيه نبيك ومصطفاك، واحشره تحت لوائه.</p>
+    </div>
+    <div class="dua-card">
+     <h3>لصبر الأهل</h3>
+     <p>اللهم ألهم أهله وذويه الصبر والسلوان، واجبر كسر قلوبهم على فراقه، واجمعهم به في الفردوس الأعلى.</p>
+    </div>
+   </div>
+  </section>
+
+  <div class="decorative-pattern">✦ ✦ ✦</div>
+
+  <!-- Prayer Counter Section -->
+  <section id="counter">
+   <h2 class="section-title">عداد الاستغفار</h2>
+   <div class="counter-container">
+    <p class="counter-instruction">اضغط على الزر لتهديه استغفاراً</p>
+    <div class="counter-display" id="counter-display">تم الاستغفار له 0 مرة</div>
+    <button class="counter-button" id="counter-button"> أستغفر الله العظيم وأتوب إليه </button>
+   </div>
+  </section>
+
+  <div class="decorative-pattern">✦ ✦ ✦</div>
+
+  <!-- Quran Section -->
+  <section id="quran">
+   <h2 class="section-title">تلاوة خاشعة</h2>
+   <div class="quran-container">
+    <div class="video-container">
+     <iframe src="https://www.youtube.com/embed/qQsEKzy_YyQ" allowfullscreen></iframe>
+    </div>
+    <p class="quran-caption">اللهم اجعل القرآن الكريم أنيساً له في وحدته</p>
+   </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+   <p class="footer-dua">اللهم تقبل منا هذا العمل واجعله صدقة جارية في ميزان حسناته</p>
+   <div class="decorative-pattern">✦ ✦ ✦</div>
+   <p class="share-prompt">شارك الرابط مع أصدقائك ليتضاعف الأجر</p>
+  </footer>
+
+  <script>
+    const defaultConfig = {
+      site_title: "صدقة جارية",
+      deceased_name: "سيف الدين محل عين",
+      biography_text: "رحل عن عالمنا المغفور له بإذن الله سيف الدين محل عين، تاركاً خلفه سيرة عطرة وقلباً نقياً. نسأل الله أن يجعل مرضه كفارة لذنبه، وصبره رفعةً لدرجته.",
+      background_color: "#F8FAFC",
+      accent_color: "#D4AF37",
+      text_color: "#1F2937",
+      card_background: "#FFFFFF",
+      secondary_text: "#6B7280",
+      font_family: "Noto Sans Arabic",
+      font_size: 16
+    };
+
+    let localPrayerCount = 0;
+
+    async function onConfigChange(config) {
+      const customFont = config.font_family || defaultConfig.font_family;
+      const baseFontSize = config.font_size || defaultConfig.font_size;
+      const bgColor = config.background_color || defaultConfig.background_color;
+      const accentColor = config.accent_color || defaultConfig.accent_color;
+      const textColor = config.text_color || defaultConfig.text_color;
+      const cardBg = config.card_background || defaultConfig.card_background;
+      const secondaryText = config.secondary_text || defaultConfig.secondary_text;
+
+      document.body.style.background = `linear-gradient(135deg, ${bgColor} 0%, ${adjustColor(bgColor, -10)} 100%)`;
+      document.body.style.color = textColor;
+      document.body.style.fontFamily = `${customFont}, 'Noto Sans Arabic', sans-serif`;
+      document.body.style.fontSize = `${baseFontSize}px`;
+
+      const siteTitleEl = document.getElementById('site-title');
+      if (siteTitleEl) {
+        siteTitleEl.textContent = config.site_title || defaultConfig.site_title;
+        siteTitleEl.style.color = accentColor;
+        siteTitleEl.style.fontFamily = `'Amiri', ${customFont}, serif`;
+      }
+
+      const deceasedEl = document.getElementById('deceased-name');
+      if (deceasedEl) {
+        deceasedEl.textContent = config.deceased_name || defaultConfig.deceased_name;
+        deceasedEl.style.color = textColor;
+        deceasedEl.style.fontSize = `${baseFontSize * 1.875}px`;
+        deceasedEl.style.fontFamily = `'Amiri', ${customFont}, serif`;
+      }
+
+      const bioText = document.getElementById('biography-text');
+      if (bioText) {
+        bioText.textContent = config.biography_text || defaultConfig.biography_text;
+        bioText.style.fontSize = `${baseFontSize * 1.2}px`;
+      }
+
+      const allTitles = document.querySelectorAll('.section-title');
+      allTitles.forEach(title => {
+        title.style.color = accentColor;
+        title.style.fontSize = `${baseFontSize * 2.5}px`;
+        title.style.fontFamily = `'Amiri', ${customFont}, serif`;
+      });
+
+      const bismillahEl = document.querySelector('.bismillah');
+      if (bismillahEl) {
+        bismillahEl.style.color = accentColor;
+        bismillahEl.style.fontSize = `${baseFontSize * 2.5}px`;
+        bismillahEl.style.fontFamily = `'Amiri', ${customFont}, serif`;
+      }
+
+      const statusEl = document.querySelector('.status');
+      if (statusEl) {
+        statusEl.style.color = secondaryText;
+        statusEl.style.fontSize = `${baseFontSize * 1.3}px`;
+      }
+
+      const verse = document.querySelector('.quranic-verse p');
+      if (verse) {
+        verse.style.fontSize = `${baseFontSize * 1.8}px`;
+        verse.style.color = textColor;
+        verse.style.fontFamily = `'Amiri', ${customFont}, serif`;
+      }
+
+      const quranicVerseEl = document.querySelector('.quranic-verse');
+      if (quranicVerseEl) {
+        quranicVerseEl.style.background = cardBg;
+        quranicVerseEl.style.borderRightColor = accentColor;
+      }
+
+      const ctaButton = document.querySelector('.cta-button');
+      if (ctaButton) {
+        ctaButton.style.background = accentColor;
+        ctaButton.style.fontSize = `${baseFontSize * 1.2}px`;
+      }
+
+      const duaCards = document.querySelectorAll('.dua-card');
+      duaCards.forEach(card => {
+        card.style.background = cardBg;
+        card.style.borderTopColor = accentColor;
+        const cardTitle = card.querySelector('h3');
+        if (cardTitle) {
+          cardTitle.style.color = accentColor;
+          cardTitle.style.fontSize = `${baseFontSize * 1.5}px`;
+          cardTitle.style.fontFamily = `'Amiri', ${customFont}, serif`;
+        }
+        const cardText = card.querySelector('p');
+        if (cardText) {
+          cardText.style.fontSize = `${baseFontSize * 1.1}px`;
+          cardText.style.color = textColor;
+        }
+      });
+
+      const biographyContent = document.querySelector('.biography-content');
+      if (biographyContent) biographyContent.style.background = cardBg;
+
+      const counterContainer = document.querySelector('.counter-container');
+      if (counterContainer) counterContainer.style.background = cardBg;
+
+      const counterInstruction = document.querySelector('.counter-instruction');
+      if (counterInstruction) {
+        counterInstruction.style.fontSize = `${baseFontSize * 1.2}px`;
+        counterInstruction.style.color = secondaryText;
+      }
+
+      const counterDisplay = document.getElementById('counter-display');
+      if (counterDisplay) {
+        counterDisplay.style.color = accentColor;
+        counterDisplay.style.fontSize = `${baseFontSize * 2.5}px`;
+        counterDisplay.style.fontFamily = `'Amiri', ${customFont}, serif`;
+      }
+
+      const counterButton = document.getElementById('counter-button');
+      if (counterButton) {
+        counterButton.style.background = `linear-gradient(135deg, ${accentColor} 0%, ${adjustColor(accentColor, -10)} 100%)`;
+        counterButton.style.fontSize = `${baseFontSize * 1.3}px`;
+      }
+
+      const quranContainer = document.querySelector('.quran-container');
+      if (quranContainer) quranContainer.style.background = cardBg;
+
+      const quranCaption = document.querySelector('.quran-caption');
+      if (quranCaption) {
+        quranCaption.style.color = secondaryText;
+        quranCaption.style.fontSize = `${baseFontSize * 1.3}px`;
+        quranCaption.style.fontFamily = `'Amiri', ${customFont}, serif`;
+      }
+
+      const navLinks = document.querySelectorAll('.nav-links a');
+      navLinks.forEach(link => {
+        link.style.fontSize = `${baseFontSize}px`;
+      });
+    }
+
+    // Robust color adjuster: accepts #rrggbb and percent (-100..100)
+    function adjustColor(hex, percent) {
+      try {
+        const normalized = hex.replace('#', '').trim();
+        if (normalized.length !== 6) return hex;
+        const r = parseInt(normalized.slice(0,2), 16);
+        const g = parseInt(normalized.slice(2,4), 16);
+        const b = parseInt(normalized.slice(4,6), 16);
+        const amt = Math.round(2.55 * percent);
+        const clamp = (v) => Math.max(0, Math.min(255, v));
+        const rr = clamp(r + amt);
+        const gg = clamp(g + amt);
+        const bb = clamp(b + amt);
+        const toHex = (n) => n.toString(16).padStart(2, '0');
+        return `#${toHex(rr)}${toHex(gg)}${toHex(bb)}`;
+      } catch (e) {
+        return hex;
+      }
+    }
+
+    function scrollToSection(sectionId) {
+      const el = document.getElementById(sectionId);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    const dataHandler = {
+      onDataChanged(data) {
+        // No need to display data for this write-only counter
+      }
+    };
+
+    async function incrementCounter() {
+      const button = document.getElementById('counter-button');
+      const display = document.getElementById('counter-display');
+
+      if (!button || !display) return;
+
+      // optimistic update with safe rollback
+      button.disabled = true;
+      button.classList.add('loading');
+
+      localPrayerCount++;
+      display.textContent = `تم الاستغفار له ${localPrayerCount} مرة`;
+
+      try {
+        if (window.dataSdk && typeof window.dataSdk.create === 'function') {
+          const result = await window.dataSdk.create({
+            prayer_count: 1,
+            timestamp: new Date().toISOString()
+          });
+
+          // if SDK returns an object with isOk flag, check it
+          if (result && typeof result === 'object' && 'isOk' in result && !result.isOk) {
+            throw new Error('dataSdk.create returned isOk=false');
+          }
+        } else {
+          // No SDK found: local-only mode (still works visually)
+          console.warn('dataSdk.create not available — increment stored locally only');
+        }
+      } catch (err) {
+        // rollback optimistic increment
+        localPrayerCount = Math.max(0, localPrayerCount - 1);
+        display.textContent = `تم الاستغفار له ${localPrayerCount} مرة`;
+
+        // show transient error message
+        let existingError = document.getElementById('error-message');
+        if (existingError) existingError.remove();
+
+        const errorMsg = document.createElement('p');
+        errorMsg.textContent = 'حدث خطأ، يرجى المحاولة مرة أخرى';
+        errorMsg.style.color = '#EF4444';
+        errorMsg.style.marginTop = '1rem';
+        errorMsg.id = 'error-message';
+        document.querySelector('.counter-container').appendChild(errorMsg);
+
+        setTimeout(() => {
+          const e = document.getElementById('error-message');
+          if (e) e.remove();
+        }, 3000);
+
+        console.error('incrementCounter error:', err);
+      } finally {
+        button.disabled = false;
+        button.classList.remove('loading');
+      }
+    }
+
+    // Attach handler safely after DOM is present
+    (function attachHandlers() {
+      const counterBtn = document.getElementById('counter-button');
+      if (counterBtn) counterBtn.addEventListener('click', incrementCounter);
+    })();
+
+    async function initApp() {
+      // Initialize data SDK if present
+      try {
+        if (window.dataSdk && typeof window.dataSdk.init === 'function') {
+          const initResult = await window.dataSdk.init(dataHandler);
+          if (!initResult || (typeof initResult === 'object' && !initResult.isOk && 'isOk' in initResult)) {
+            console.error('Data SDK init returned failure:', initResult);
+          }
+        } else {
+          console.warn('dataSdk.init not available — running in local-only mode');
+        }
+      } catch (e) {
+        console.error('Failed to initialize Data SDK:', e);
+      }
+
+      // Initialize element SDK if present (this is optional and guarded)
+      try {
+        if (window.elementSdk && typeof window.elementSdk.init === 'function') {
+          window.elementSdk.init({
+            defaultConfig: defaultConfig,
+            onConfigChange: onConfigChange,
+            mapToCapabilities: (config) => ({
+              recolorables: [
+                {
+                  get: () => config.background_color || defaultConfig.background_color,
+                  set: (value) => {
+                    config.background_color = value;
+                    if (window.elementSdk && typeof window.elementSdk.setConfig === 'function') window.elementSdk.setConfig({ background_color: value });
+                  }
+                },
+                {
+                  get: () => config.card_background || defaultConfig.card_background,
+                  set: (value) => {
+                    config.card_background = value;
+                    if (window.elementSdk && typeof window.elementSdk.setConfig === 'function') window.elementSdk.setConfig({ card_background: value });
+                  }
+                },
+                {
+                  get: () => config.text_color || defaultConfig.text_color,
+                  set: (value) => {
+                    config.text_color = value;
+                    if (window.elementSdk && typeof window.elementSdk.setConfig === 'function') window.elementSdk.setConfig({ text_color: value });
+                  }
+                },
+                {
+                  get: () => config.accent_color || defaultConfig.accent_color,
+                  set: (value) => {
+                    config.accent_color = value;
+                    if (window.elementSdk && typeof window.elementSdk.setConfig === 'function') window.elementSdk.setConfig({ accent_color: value });
+                  }
+                },
+                {
+                  get: () => config.secondary_text || defaultConfig.secondary_text,
+                  set: (value) => {
+                    config.secondary_text = value;
+                    if (window.elementSdk && typeof window.elementSdk.setConfig === 'function') window.elementSdk.setConfig({ secondary_text: value });
+                  }
+                }
+              ],
+              borderables: [],
+              fontEditable: {
+                get: () => config.font_family || defaultConfig.font_family,
+                set: (value) => {
+                  config.font_family = value;
+                  if (window.elementSdk && typeof window.elementSdk.setConfig === 'function') window.elementSdk.setConfig({ font_family: value });
+                }
+              },
+              fontSizeable: {
+                get: () => config.font_size || defaultConfig.font_size,
+                set: (value) => {
+                  config.font_size = value;
+                  if (window.elementSdk && typeof window.elementSdk.setConfig === 'function') window.elementSdk.setConfig({ font_size: value });
+                }
+              }
+            }),
+            mapToEditPanelValues: (config) => new Map([
+              ["site_title", config.site_title || defaultConfig.site_title],
+              ["deceased_name", config.deceased_name || defaultConfig.deceased_name],
+              ["biography_text", config.biography_text || defaultConfig.biography_text]
+            ])
+          });
+        } else {
+          console.warn('elementSdk.init not available — editor features disabled');
+          // still apply defaults visually
+          onConfigChange(defaultConfig);
+        }
+      } catch (e) {
+        console.error('Error initializing elementSdk:', e);
+        onConfigChange(defaultConfig);
+      }
+    }
+
+    // Start app when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initApp);
+    } else {
+      initApp();
+    }
+  </script>
+ </body>
 </html>
