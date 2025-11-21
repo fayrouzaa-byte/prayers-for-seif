@@ -493,121 +493,144 @@
       font_size: 16
     };
 
-    // --- CounterAPI configuration (change here if you want another namespace or key) ---
-    const COUNTAPI_NAMESPACE = 'prayers-for-seif'; // namespace on countapi.xyz
-    const COUNTAPI_KEY = 'seif-eldin-mahal-ain-memorial'; // your unique key
-    const COUNTAPI_BASE = 'https://api.countapi.xyz';
-
-    // Will hold the authoritative total from CounterAPI
+    // localPrayerCount will hold the global total if SDK provides it,
+    // otherwise fallback to localStorage per-browser total.
     let localPrayerCount = 0;
 
     function updateDisplay() {
       const display = document.getElementById('counter-display');
       if (!display) return;
+      // Use Arabic pluralization simple format (you can extend)
       display.textContent = `تم الاستغفار له ${localPrayerCount} مرة`;
     }
 
-    // Ensure counter exists: try GET, if not exists -> create with value 0
-    async function ensureCounterExists() {
-      const getUrl = `${COUNTAPI_BASE}/get/${encodeURIComponent(COUNTAPI_NAMESPACE)}/${encodeURIComponent(COUNTAPI_KEY)}`;
-      try {
-        const res = await fetch(getUrl);
-        if (res.ok) {
-          const json = await res.json();
-          if (json && typeof json.value === 'number') {
-            localPrayerCount = json.value;
-            updateDisplay();
-            return;
-          }
-        }
-        // If GET failed (404 or otherwise), try to create
-      } catch (e) {
-        // ignore and try create
-      }
+    // Try to load global total from the SDK. Tries multiple common patterns:
+    // 1) dataSdk.getTotal() -> { total: number } or number
+    // 2) dataSdk.list() -> array of records with prayer_count numbers (sum them)
+    // 3) dataSdk.query(...) -> array-like
+    // Fallback: localStorage key 'prayer_total' (per-browser)
+    async function loadTotalFromSdk() {
+      // local fallback helper
+      const fallbackFromLocal = () => {
+        const stored = parseInt(localStorage.getItem('prayer_total') || '0', 10) || 0;
+        localPrayerCount = stored;
+        updateDisplay();
+      };
 
-      // Create counter with initial value 0 (create returns object with value)
       try {
-        const createUrl = `${COUNTAPI_BASE}/create?namespace=${encodeURIComponent(COUNTAPI_NAMESPACE)}&key=${encodeURIComponent(COUNTAPI_KEY)}&value=0`;
-        const res2 = await fetch(createUrl, { method: 'GET' });
-        if (res2.ok) {
-          const j2 = await res2.json();
-          if (j2 && typeof j2.value === 'number') {
-            localPrayerCount = j2.value;
-            updateDisplay();
-            return;
+        if (window.dataSdk) {
+          // 1) preferred: getTotal
+          if (typeof window.dataSdk.getTotal === 'function') {
+            const res = await window.dataSdk.getTotal();
+            // possible shapes: { total: N } or N
+            if (res != null) {
+              if (typeof res === 'number') {
+                localPrayerCount = res;
+                localStorage.setItem('prayer_total', String(localPrayerCount));
+                updateDisplay();
+                return;
+              } else if (typeof res === 'object' && 'total' in res && typeof res.total === 'number') {
+                localPrayerCount = res.total;
+                localStorage.setItem('prayer_total', String(localPrayerCount));
+                updateDisplay();
+                return;
+              }
+            }
           }
-        }
-      } catch (e) {
-        console.error('ensureCounterExists create error', e);
-      }
 
-      // Fallback: show 0
-      localPrayerCount = 0;
-      updateDisplay();
+          // 2) try list()
+          if (typeof window.dataSdk.list === 'function') {
+            // try calling list with no args; if API needs args adjust accordingly
+            const items = await window.dataSdk.list();
+            if (Array.isArray(items)) {
+              let total = 0;
+              for (const it of items) {
+                // handle different field names
+                if (it && typeof it.prayer_count === 'number') total += it.prayer_count;
+                else if (it && typeof it.count === 'number') total += it.count;
+                else if (it && typeof it.value === 'number') total += it.value;
+                else if (it && typeof it.amount === 'number') total += it.amount;
+              }
+              if (total > 0 || items.length >= 0) {
+                localPrayerCount = total;
+                localStorage.setItem('prayer_total', String(localPrayerCount));
+                updateDisplay();
+                return;
+              }
+            }
+          }
+
+          // 3) try query()
+          if (typeof window.dataSdk.query === 'function') {
+            try {
+              const items = await window.dataSdk.query({}); // adjust query shape if needed
+              if (Array.isArray(items)) {
+                let total = 0;
+                items.forEach(it => {
+                  if (it && typeof it.prayer_count === 'number') total += it.prayer_count;
+                });
+                localPrayerCount = total;
+                localStorage.setItem('prayer_total', String(localPrayerCount));
+                updateDisplay();
+                return;
+              }
+            } catch (e) {
+              // ignore and fallback
+            }
+          }
+
+          // 4) If none of the above worked, fallback to local storage
+          fallbackFromLocal();
+        } else {
+          // no dataSdk available
+          fallbackFromLocal();
+        }
+      } catch (err) {
+        console.error('loadTotalFromSdk error:', err);
+        fallbackFromLocal();
+      }
     }
 
-    // Load current global total from CountAPI
-    async function loadTotalFromCountApi() {
-      try {
-        const getUrl = `${COUNTAPI_BASE}/get/${encodeURIComponent(COUNTAPI_NAMESPACE)}/${encodeURIComponent(COUNTAPI_KEY)}`;
-        const res = await fetch(getUrl);
-        if (!res.ok) {
-          // maybe counter doesn't exist yet -> ensure it
-          await ensureCounterExists();
-          return;
-        }
-        const json = await res.json();
-        if (json && typeof json.value === 'number') {
-          localPrayerCount = json.value;
-          updateDisplay();
-          return;
-        }
-      } catch (e) {
-        console.error('loadTotalFromCountApi error', e);
-      }
-      // fallback to ensure exists
-      await ensureCounterExists();
-    }
-
-    // Increment the global counter (atomic on CountAPI) and refresh display with authoritative value
     async function incrementCounter() {
       const button = document.getElementById('counter-button');
-      if (!button) return;
+      const display = document.getElementById('counter-display');
+
+      if (!button || !display) return;
 
       button.disabled = true;
       button.classList.add('loading');
-      const originalText = button.textContent;
+
+      // optimistic local increment removed: we'll prefer to re-fetch the global total
+      // but to keep responsive UX, show a temporary visual feedback:
       button.textContent = 'جاري الإرسال...';
 
       try {
-        // Use the "hit" endpoint (atomic increment by 1)
-        const hitUrl = `${COUNTAPI_BASE}/hit/${encodeURIComponent(COUNTAPI_NAMESPACE)}/${encodeURIComponent(COUNTAPI_KEY)}`;
-        const res = await fetch(hitUrl, { method: 'GET' });
-        if (!res.ok) throw new Error('CountAPI hit failed: ' + res.status);
-        const json = await res.json();
-        if (json && typeof json.value === 'number') {
-          localPrayerCount = json.value;
-          updateDisplay();
-        } else {
-          throw new Error('CountAPI returned unexpected payload');
-        }
-
-        // If you also want to record an entry in your dataSdk (optional), keep compatibility:
         if (window.dataSdk && typeof window.dataSdk.create === 'function') {
-          try {
-            await window.dataSdk.create({
-              prayer_count: 1,
-              timestamp: new Date().toISOString()
-            });
-          } catch (e) {
-            // ignore errors from optional sdk, CountAPI already updated global total
-            console.warn('dataSdk.create failed (non-fatal)', e);
+          const result = await window.dataSdk.create({
+            prayer_count: 1,
+            timestamp: new Date().toISOString()
+          });
+
+          // if SDK returns isOk, check it
+          if (result && typeof result === 'object' && 'isOk' in result && !result.isOk) {
+            throw new Error('dataSdk.create returned isOk=false');
           }
+
+          // after successful create, reload the authoritative total
+          await loadTotalFromSdk();
+        } else {
+          // SDK missing: update localStorage total as best-effort shared on this browser
+          let stored = parseInt(localStorage.getItem('prayer_total') || '0', 10) || 0;
+          stored++;
+          localStorage.setItem('prayer_total', String(stored));
+          localPrayerCount = stored;
+          updateDisplay();
+          console.warn('dataSdk.create not available — updated localStorage-only total');
         }
       } catch (err) {
         console.error('incrementCounter error:', err);
 
-        // show transient error message
+        // transient error message
         let existingError = document.getElementById('error-message');
         if (existingError) existingError.remove();
 
@@ -626,9 +649,53 @@
       } finally {
         button.disabled = false;
         button.classList.remove('loading');
-        button.textContent = originalText;
+        button.textContent = ' أستغفر الله العظيم وأتوب إليه ';
       }
     }
+
+    // dataHandler used by SDK for realtime updates (if SDK supports pushing)
+    const dataHandler = {
+      onDataChanged(data) {
+        try {
+          if (!data) return;
+          // Accept multiple shapes: { total: N }, { prayer_total: N }, or an array
+          if (typeof data === 'object') {
+            if ('total' in data && typeof data.total === 'number') {
+              localPrayerCount = data.total;
+              localStorage.setItem('prayer_total', String(localPrayerCount));
+              updateDisplay();
+              return;
+            }
+            if ('prayer_total' in data && typeof data.prayer_total === 'number') {
+              localPrayerCount = data.prayer_total;
+              localStorage.setItem('prayer_total', String(localPrayerCount));
+              updateDisplay();
+              return;
+            }
+            // If data is a new item e.g. { prayer_count: 1 }, reload totals
+            if ('prayer_count' in data) {
+              // re-fetch authoritative total if possible
+              loadTotalFromSdk();
+              return;
+            }
+          }
+          // if data is array, sum it
+          if (Array.isArray(data)) {
+            let total = 0;
+            for (const it of data) {
+              if (it && typeof it.prayer_count === 'number') total += it.prayer_count;
+            }
+            if (total >= 0) {
+              localPrayerCount = total;
+              localStorage.setItem('prayer_total', String(localPrayerCount));
+              updateDisplay();
+            }
+          }
+        } catch (e) {
+          console.error('dataHandler.onDataChanged error:', e);
+        }
+      }
+    };
 
     // Attach handler safely after DOM is present
     (function attachHandlers() {
@@ -636,48 +703,25 @@
       if (counterBtn) counterBtn.addEventListener('click', incrementCounter);
     })();
 
-    // dataHandler used by a possible dataSdk for realtime updates (kept for compatibility)
-    const dataHandler = {
-      onDataChanged(data) {
-        // If your dataSdk pushes information, we prefer authoritative CountAPI,
-        // but if SDK sends a direct total, you may update display.
-        try {
-          if (!data) return;
-          if (typeof data === 'object') {
-            if ('total' in data && typeof data.total === 'number') {
-              localPrayerCount = data.total;
-              updateDisplay();
-              return;
-            }
-            if ('prayer_count' in data) {
-              // new event -> refresh authoritative CountAPI value
-              loadTotalFromCountApi();
-              return;
-            }
-          }
-        } catch (e) {
-          console.error('dataHandler.onDataChanged error', e);
-        }
-      }
-    };
-
     async function initApp() {
-      // Initialize optional SDKs if present
+      // initialize SDKs if present (safe guards)
       try {
         if (window.dataSdk && typeof window.dataSdk.init === 'function') {
           const initResult = await window.dataSdk.init(dataHandler);
           if (!initResult || (typeof initResult === 'object' && 'isOk' in initResult && !initResult.isOk)) {
             console.error('Data SDK init returned failure:', initResult);
           }
+        } else {
+          console.warn('dataSdk.init not available — running in local-only mode');
         }
       } catch (e) {
         console.error('Failed to initialize Data SDK:', e);
       }
 
-      // Load the authoritative CountAPI total (or create it)
-      await loadTotalFromCountApi();
+      // load the total global count (or fallback)
+      await loadTotalFromSdk();
 
-      // elementSdk initialization (optional editor), guarded
+      // elementSdk for editor/configurable UI
       try {
         if (window.elementSdk && typeof window.elementSdk.init === 'function') {
           window.elementSdk.init({
@@ -744,7 +788,8 @@
             ])
           });
         } else {
-          // apply defaults visually
+          console.warn('elementSdk.init not available — editor features disabled');
+          // still apply defaults visually
           onConfigChange(defaultConfig);
         }
       } catch (e) {
@@ -760,7 +805,7 @@
       initApp();
     }
 
-    // ---------- helper functions (unchanged) ----------
+    // ---------- existing helper functions left unchanged ----------
     async function onConfigChange(config) {
       const customFont = config.font_family || defaultConfig.font_family;
       const baseFontSize = config.font_size || defaultConfig.font_size;
